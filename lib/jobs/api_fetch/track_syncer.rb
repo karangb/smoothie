@@ -1,19 +1,13 @@
-require 'track'
+require 'models/track'
 require 'soundcloud_client'
-require 'chainable_job/base_job'
+require 'jobs/base_job'
 
 module Smoothie
   module ApiFetch
-    class TrackSyncer < Smoothie::ChainableJob::BaseJob
+    class TrackSyncer < Smoothie::BaseJob
 
-      @queue = :api
-
-
-      def initialize(opts = {})
-        super
-
-        throw "id must be defined" unless @arguments['id']
-        @track = Smoothie::Track.new(@arguments['id'])
+      def init(id)
+        @track = Smoothie::Track.new(id)
       end
 
 
@@ -22,7 +16,7 @@ module Smoothie
       end
 
 
-      def perform
+      def do_perform
         # Core fetching
         soundcloud = Smoothie::SoundcloudClient.new
 

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-require 'api_fetch/user_syncer'
+require 'jobs/api_fetch/user_syncer'
 
 describe Smoothie::ApiFetch::UserSyncer do
 

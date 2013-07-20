@@ -1,8 +1,8 @@
-require 'user'
-
 # A track model
 module Smoothie
   class Track
+
+    FAVORITERS_EXPIRATION = 86400 # 1 day
 
     include Redis::Objects
 
@@ -37,6 +37,10 @@ module Smoothie
 
     def favoriters_synced?
       favoriters_synced_at && !favoriters_synced_at.value.nil?
+    end
+
+    def favoriters_up_to_date?
+      favoriters_synced? && (Time.parse(favoriters_synced_at.value) > (Time.now - FAVORITERS_EXPIRATION))
     end
 
     def set_favoriters_synced!

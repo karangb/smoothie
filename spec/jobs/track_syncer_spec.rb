@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-require 'api_fetch/track_syncer'
+require 'jobs/api_fetch/track_syncer'
 
 describe Smoothie::ApiFetch::TrackSyncer do
 

@@ -1,24 +1,18 @@
-# Fetches a users's track graph (favorite tracks of users who favorited the same tracks as the first one)
-# Need to sync the tracks / users until the last level, to get their favorites / favoriters count
-require 'chainable_job/base_job'
-require 'playlist_syncer'
-require 'api_fetch/track_favoriters_syncer'
-require 'api_fetch/user_favorites_syncer'
+# # Fetches a users's track graph (favorite tracks of users who favorited the same tracks as the first one)
+# # Need to sync the tracks / users until the last level, to get their favorites / favoriters count
+# require 'chainable_job/base_job'
+# require 'playlist_syncer'
+# require 'api_fetch/track_favoriters_syncer'
+# require 'api_fetch/user_favorites_syncer'
   
 module Smoothie
-  class TrackGraphSyncer < Smoothie::ChainableJob::BaseJob
+  class TrackGraphSyncer < Smoothie::BaseJob
 
-    @queue = :default
+  	DEFAULT_LIMIT = 10
 
-    DEFAULT_LIMIT = 10
-
-    def initialize(opts = {})
-      super
-
-      throw "id must be defined" unless @arguments['id']
-      
-      @user   = Smoothie::User.new(@arguments['id'])
-      @limit  = DEFAULT_LIMIT
+    def init(id, limit = DEFAULT_LIMIT)
+      @user   = Smoothie::User.new(id)
+      @limit  = limit
     end
 
     def ready?
@@ -28,7 +22,7 @@ module Smoothie
 
     # Naive implementation, to make recursive when a little more mature
     # Complexity : NxLxL -- N : size of user playlist -- L : limit size
-    def perform
+    def do_perform
       # Ensure the user's playlist is synced
       wait_for Smoothie::PlaylistSyncer.new('id' => @user.id)
 

@@ -1,6 +1,6 @@
 # encoding: utf-8
 require 'shuffler'
-require 'playlist_syncer'
+require 'jobs/playlist_syncer'
 
 
 # Class responsible for building a user's playlist from various criteria
@@ -36,7 +36,7 @@ module Smoothie
       # Compute them if not present or out of date
       # The check to do so is in the task, no need to make any checks
       unless @user.favorites_up_to_date?
-        Smoothie::PlaylistSyncer.new('id' => @user.id).run
+        Smoothie::PlaylistSyncer.perform_async(@user.id)
       end
 
       # Cache and return them

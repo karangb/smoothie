@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'user'
+require 'models/user'
 
 describe Smoothie::User do
 

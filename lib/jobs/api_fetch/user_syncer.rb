@@ -1,45 +1,34 @@
-require 'user'
+require 'models/user'
 require 'soundcloud_client'
-require 'chainable_job/base_job'
+require 'jobs/base_job'
 
 module Smoothie
   module ApiFetch
-    class UserSyncer < Smoothie::ChainableJob::BaseJob
+    class UserSyncer < Smoothie::BaseJob
 
-      @queue = :api
-
-
-      def initialize(opts = {})
-        super
-
-        throw "id must be defined" unless @arguments['id']
+      def init(id)
+        @user = Smoothie::User.new(id)
       end
 
 
       def ready?
-        user.synced?
+        @user.synced?
       end
 
 
-      def perform
+      def do_perform
         soundcloud = Smoothie::SoundcloudClient.new
 
         # Get the user attributes
-        user_data = soundcloud.get_user(user.id)
+        user_data = soundcloud.get_user(@user.id)
 
         # Save them
         [:tracks_count].each do |attribute|
-          user.send(:"#{attribute}=", user_data[attribute])
+          @user.send(:"#{attribute}=", user_data[attribute])
         end
 
         # Updated the synced_at time
-        user.set_synced!
-      end
-
-      private
-
-      def user
-        @user ||= Smoothie::User.new(@arguments['id'])
+        @user.set_synced!
       end
 
     end

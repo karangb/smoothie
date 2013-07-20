@@ -1,32 +1,25 @@
-require 'track'
-require 'api_fetch/track_syncer'
+require 'models/track'
+require 'jobs/api_fetch/track_syncer'
 require 'soundcloud_client'
-require 'chainable_job/base_job'
+require 'jobs/base_job'
 
 module Smoothie
   module ApiFetch
-    class TrackFavoritersSyncer < Smoothie::ChainableJob::BaseJob
+    class TrackFavoritersSyncer < Smoothie::BaseJob
 
-      @queue = :api
-
-
-      def initialize(opts = {})
-        super
-
-        throw "id must be defined" unless @arguments['id']
-
-        @track = Smoothie::Track.new(@arguments['id'])
+      def init(id)
+        @track = Smoothie::Track.new(id)
       end
 
 
       def ready?
-        @track.favoriters_synced?
+        @track.favoriters_up_to_date?
       end
 
 
-      def perform
+      def do_perform
         # Ensure the track is synced
-        wait_for ApiFetch::TrackSyncer.new('id' => @track.id)
+        wait_for :class => ApiFetch::TrackSyncer, :args => @track.id
 
         soundcloud = Smoothie::SoundcloudClient.new
 

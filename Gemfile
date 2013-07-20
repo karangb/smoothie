@@ -20,7 +20,7 @@ end
 
 gem 'soundcloud'
 gem 'redis-objects'
-gem 'resque', '~> 1.0'
+gem 'sidekiq'
 
 gem 'capistrano'
 gem 'rvm-capistrano'

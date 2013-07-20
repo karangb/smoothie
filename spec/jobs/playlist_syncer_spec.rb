@@ -1,10 +1,9 @@
 require 'spec_helper'
-require 'playlist_syncer'
+require 'jobs/playlist_syncer'
 
 describe Smoothie::PlaylistSyncer do
 
   let(:user_id){3207}
-  let(:syncer){Smoothie::PlaylistSyncer.new('id' => user_id)}
 
   describe "#run" do
 
@@ -13,9 +12,10 @@ describe Smoothie::PlaylistSyncer do
       user = Smoothie::User.new(user_id)
       user.favorites_synced?.should be_false
 
-      syncer.should_receive(:wait_for).with(Smoothie::ApiFetch::UserFavoritesSyncer.new('id' => user_id, 'force' => true))
+      Smoothie::PlaylistSyncer.new.perform(user_id)
 
-      syncer.run
+      Smoothie::ApiFetch::UserFavoritesSyncer.jobs.count.should == 1
+      Smoothie::ApiFetch::UserFavoritesSyncer.jobs.first["args"].should == [user_id]
 
     end
 

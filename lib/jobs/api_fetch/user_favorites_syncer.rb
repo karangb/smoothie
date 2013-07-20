@@ -1,21 +1,14 @@
-require 'user'
-require 'api_fetch/user_syncer'
+require 'models/user'
+require 'jobs/api_fetch/user_syncer'
 require 'soundcloud_client'
-require 'chainable_job/base_job'
+require 'jobs/base_job'
 
 module Smoothie
   module ApiFetch
-    class UserFavoritesSyncer < Smoothie::ChainableJob::BaseJob
+    class UserFavoritesSyncer < Smoothie::BaseJob
 
-      @queue = :api
-
-
-      def initialize(opts = {})
-        super
-
-        throw "id must be defined" unless @arguments['id']
-
-        @user = Smoothie::User.new(@arguments['id'])
+      def init(id)
+        @user = Smoothie::User.new(id)
       end
 
 
@@ -24,7 +17,7 @@ module Smoothie
       end
 
 
-      def perform
+      def do_perform
         # Ensure the user is synced
         wait_for ApiFetch::UserSyncer.new('id' => @user.id)
 

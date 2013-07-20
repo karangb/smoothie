@@ -1,5 +1,3 @@
-require 'track'
-
 # A track model
 module Smoothie
   class User

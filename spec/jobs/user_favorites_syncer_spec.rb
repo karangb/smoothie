@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'api_fetch/user_favorites_syncer'
+require 'jobs/api_fetch/user_favorites_syncer'
 
 describe Smoothie::ApiFetch::UserFavoritesSyncer do
 
